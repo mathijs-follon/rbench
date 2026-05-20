@@ -1,148 +1,131 @@
 # rbench
 
-`rbench` is a terminal-based benchmarking tool for shell commands. It provides a live TUI dashboard that shows warmup progress, benchmark progress, per-run logs, timing statistics, and a final summary after the run finishes.
+A lightweight terminal benchmarking and visualization tool built in Rust.
+
+rbench provides an interactive TUI for running and comparing benchmarks in a structured, readable way. It focuses on speed, clarity, and portability across platforms.
+
+---
 
 ## Features
 
-- Benchmark any shell command
-- Live TUI with progress bars, stats, and run logs
-- Optional warmup runs before timing starts
-- Sequential or parallel execution
-- Per-run timing output
-- Final summary in the terminal after the TUI exits
-- Detects whether the system is in power saver mode and shows a warning in the interface
+- Interactive terminal UI (TUI)
+- Benchmark execution and comparison
+- Clean layout with real-time updates
+- Cross-platform support (Linux, macOS, Windows)
+- Built with Rust for performance and safety
 
-## Example usage
+---
+
+## Installation
+
+### From source
+
+Make sure you have Rust installed (via https://rustup.rs):
 
 ```bash
-rbench 'sleep 0.1' --runs 10
-rbench 'ls -la /tmp' --runs 20 --warmup 2
-rbench 'echo hello' --runs 5 --parallel
+git clone https://github.com/mathijs-follon/rbench
+cd rbench
+cargo build --release
 ````
 
-## Command-line arguments
+The binary will be available at:
 
-### Positional argument
+```bash
+target/release/rbench
+```
 
-* `COMMAND`
-  The shell command to benchmark.
-  Example: `'ls -la'`, `'sleep 0.1'`, `'cargo build --release'`
+To install globally:
 
-### Flags
+```bash
+cargo install --path .
+```
 
-* `--runs, -r <N>`
-  Number of timed benchmark runs.
-  Default: `1`
+---
 
-* `--warmup, -w <N>`
-  Number of warmup runs to execute before benchmarking begins.
-  Default: `0`
+## Usage
 
-* `--parallel, -p`
-  Run all benchmark executions in parallel instead of sequentially.
+Run rbench from the terminal:
 
-## What the UI shows
+```bash
+rbench <options>
+```
 
-The TUI is split into three main sections:
+For help:
 
-### Header
+```bash
+rbench --help
+```
 
-Shows:
+---
 
-* the program name
-* the current phase
-* the command being benchmarked
-* a power saver warning when applicable
+## Project Structure
 
-### Main area
+* `src/` - Core application logic
+* `ui/` - Terminal UI components
+* `bench/` - Benchmark execution logic
+* `config/` - Configuration handling
 
-The main area is split into two columns.
+---
 
-#### Left side
+## Build Support
 
-* warmup progress bar
-* benchmark progress bar
-* statistics table:
+rbench supports Linux and Windows:
 
-  * mode
-  * wall time
-  * minimum run time
-  * maximum run time
-  * mean run time
-  * standard deviation
-  * success / failure count
-* compact history sparkline of recent runs
-
-#### Right side
-
-* live run log
-* warmup events
-* run start and completion messages
-* failures with exit codes
-
-### Footer
-
-Shows the available exit keys and the current status.
-
-## Exit keys
-
-* `q` to quit
-* `Esc` to quit
-* `Enter` to exit once benchmarking is complete
-
-## Output summary
-
-After leaving the TUI, `rbench` prints a final summary containing:
-
-* command
-* number of runs
-* number of warmup runs
-* execution mode
-* mean, min, max, and standard deviation
-* total wall time
-* success and failure counts
-
-## Notes
-
-* The command is executed through `sh -c`, so shell features such as pipes, redirects, and quoting are supported.
-* A non-zero exit code is treated as a failed run.
-* If `powerprofilesctl` is available and reports `power-saver`, the UI will display a warning.
-* `--runs` must be at least `1`.
-
-## Building
-
-If this is a Rust project, build it with:
+### 1. Native Linux (Recommended)
 
 ```bash
 cargo build --release
+./target/release/rbench
 ```
 
-## Running
+---
 
-```bash
-cargo run --release -- 'your command here' --runs 10
+
+### 2. Native Windows
+
+You can compile and run rbench directly on Windows using Rust:
+
+#### Requirements
+
+* Rust (MSVC toolchain recommended)
+* Windows Terminal (recommended for best rendering)
+* Visual Studio Build Tools or MSVC installed
+
+Install Rust with MSVC target:
+
+```powershell
+rustup default stable-x86_64-pc-windows-msvc
 ```
+
+Then build:
+
+```powershell
+cargo build --release
+```
+
+Run:
+
+```powershell
+.\target\release\rbench.exe
+```
+
+### Notes for Windows Users
+
+* The TUI is built using `crossterm`, which supports Windows console APIs.
+* For best experience, use **Windows Terminal** instead of the legacy cmd.exe.
+* If colors or layout appear broken, ensure ANSI support is enabled (usually automatic in modern terminals).
+* You can also use WSL
+
+---
+
+## Dependencies
+
+* `clap` - CLI parsing
+* `crossterm` - terminal handling
+* `ratatui` - TUI framework
+
+---
 
 ## License
 
 MIT License
-
-Copyright (c) 2026 Mathijs Follon
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
