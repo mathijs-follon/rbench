@@ -174,8 +174,15 @@ fn fmt_dur(d: Duration) -> String {
 
 fn run_cmd(cmd: &str) -> RunResult {
     let start = Instant::now();
+
+    #[cfg(windows)]
+    let output = Command::new("cmd").args(["/C", cmd]).output();
+
+    #[cfg(not(windows))]
     let output = Command::new("sh").arg("-c").arg(cmd).output();
+
     let duration = start.elapsed();
+
     match output {
         Ok(o) => {
             let code = o.status.code().unwrap_or(-1);
@@ -716,10 +723,9 @@ fn main() -> io::Result<()> {
     Ok(())
 }
 
+#[cfg(target_os = "linux")]
 fn is_power_saver_enabled() -> bool {
-    let output = Command::new("powerprofilesctl")
-        .arg("get")
-        .output();
+    let output = Command::new("powerprofilesctl").arg("get").output();
 
     match output {
         Ok(out) => {
@@ -728,4 +734,9 @@ fn is_power_saver_enabled() -> bool {
         }
         Err(_) => false,
     }
+}
+
+#[cfg(not(target_os = "linux"))]
+fn is_power_saver_enabled() -> bool {
+    false
 }
